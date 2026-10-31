@@ -1,18 +1,16 @@
 import os
 from collections.abc import Iterator
-from pathlib import Path
 
 import pytest
 from alembic import command
 from alembic.autogenerate import compare_metadata
-from alembic.config import Config
 from alembic.migration import MigrationContext
 from sqlalchemy import create_engine, make_url, text
 from sqlalchemy.engine import URL
 
+from app import models  # noqa: F401  (registers models on Base.metadata)
 from app.core.db import Base
-
-BACKEND_DIR = Path(__file__).resolve().parents[1]
+from tests.conftest import alembic_config
 
 
 @pytest.fixture
@@ -31,16 +29,13 @@ def empty_database_url() -> Iterator[URL]:
 
 
 def test_migrations_match_models(empty_database_url: URL) -> None:
-    """Tests build tables from the models; production builds them from migrations.
+    """The ORM works from the models; the database is built from the migrations.
 
-    If the two drift apart, tests pass while production breaks.
+    If the two drift apart, queries fail at runtime in ways neither side shows alone.
     """
-    config = Config(str(BACKEND_DIR / "alembic.ini"))
-    config.set_main_option(
-        "sqlalchemy.url", empty_database_url.render_as_string(hide_password=False)
+    command.upgrade(
+        alembic_config(empty_database_url.render_as_string(hide_password=False)), "head"
     )
-
-    command.upgrade(config, "head")
 
     engine = create_engine(empty_database_url)
     with engine.connect() as connection:

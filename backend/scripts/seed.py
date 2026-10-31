@@ -87,8 +87,8 @@ TITLE_MULTIPLIER = {
     "Solutions Architect": (1.2, 1.7),
 }
 
+# employee_code is omitted: the database generates it from employee_code_seq.
 EMPLOYEE_COLUMNS = (
-    "employee_code",
     "full_name",
     "email",
     "job_title",
@@ -157,7 +157,6 @@ def generate_employees(rng: random.Random, n: int) -> Iterator[tuple[object, ...
         salary = Decimal(f"{rng.uniform(low * m_low, high * m_high):.2f}")
         is_active = rng.random() >= INACTIVE_SHARE
         yield (
-            f"EMP-{i:06d}",
             f"{first} {last}",
             f"{first.lower()}.{last.lower()}.{i}@example.com",
             title,
