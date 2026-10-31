@@ -1,0 +1,71 @@
+{
+  "as_of": "2026-10-30",
+  "source": "European Central Bank euro foreign exchange reference rates for 2026-10-30, converted to USD; AED derived from its fixed peg of 3.6725 AED per USD",
+  "currencies": [
+    {
+      "code": "USD",
+      "name": "US Dollar",
+      "rate_to_usd": "1.00000000"
+    },
+    {
+      "code": "GBP",
+      "name": "British Pound",
+      "rate_to_usd": "1.33988966"
+    },
+    {
+      "code": "EUR",
+      "name": "Euro",
+      "rate_to_usd": "1.11720000"
+    },
+    {
+      "code": "INR",
+      "name": "Indian Rupee",
+      "rate_to_usd": "0.01053128"
+    },
+    {
+      "code": "JPY",
+      "name": "Japanese Yen",
+      "rate_to_usd": "0.00635929"
+    },
+    {
+      "code": "CAD",
+      "name": "Canadian Dollar",
+      "rate_to_usd": "0.71587851"
+    },
+    {
+      "code": "AUD",
+      "name": "Australian Dollar",
+      "rate_to_usd": "0.70246479"
+    },
+    {
+      "code": "BRL",
+      "name": "Brazilian Real",
+      "rate_to_usd": "0.18407698"
+    },
+    {
+      "code": "ZAR",
+      "name": "South African Rand",
+      "rate_to_usd": "0.05991794"
+    },
+    {
+      "code": "MXN",
+      "name": "Mexican Peso",
+      "rate_to_usd": "0.05288846"
+    },
+    {
+      "code": "SGD",
+      "name": "Singapore Dollar",
+      "rate_to_usd": "0.78224338"
+    },
+    {
+      "code": "AED",
+      "name": "UAE Dirham",
+      "rate_to_usd": "0.27229408"
+    },
+    {
+      "code": "SEK",
+      "name": "Swedish Krona",
+      "rate_to_usd": "0.10176717"
+    }
+  ]
+}
