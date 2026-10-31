@@ -20,4 +20,6 @@ Web-based salary management for an HR manager overseeing ~10,000 employees acros
 
 ## Documentation
 
-Requirements, design notes, architecture diagrams, trade-offs and performance notes will be linked here as they are added.
+- [Requirements](docs/requirements.md): goal, scope, assumptions and what is deliberately left out
+
+Design notes, architecture diagrams, trade-offs and performance notes will be linked here as they are added.
