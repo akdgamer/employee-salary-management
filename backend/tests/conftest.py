@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session  # noqa: E402
 from app import models  # noqa: E402, F401  (registers models on Base.metadata)
 from app.core.db import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
+from scripts.create_admin import create_admin  # noqa: E402
 
 _engine = create_engine(os.environ["DATABASE_URL"])
 
@@ -47,6 +48,14 @@ def db() -> Iterator[Session]:
     session.close()
     transaction.rollback()
     connection.close()
+
+
+@pytest.fixture
+def admin(db: Session) -> tuple[str, str]:
+    """The HR manager's login, created the same way production creates it."""
+    username, password = "hr-admin", "correct-horse-battery"
+    create_admin(db.connection(), username, password)
+    return username, password
 
 
 @pytest.fixture

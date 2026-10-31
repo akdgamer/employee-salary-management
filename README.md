@@ -30,9 +30,11 @@ python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env                 # then set JWT_SECRET and ADMIN_PASSWORD
 alembic upgrade head                 # create the schema
-python -m scripts.seed               # 10,000 employees (re-runnable)
-uvicorn app.main:app --reload        # http://localhost:8000/health
+python -m scripts.seed               # 10,000 employees + admin login (re-runnable)
+uvicorn app.main:app --reload        # API docs at http://localhost:8000/docs
 ```
+
+Sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD` from `.env`. To change the password without touching employee data, update `.env` and run `python -m scripts.create_admin`.
 
 Checks (from `backend/`):
 

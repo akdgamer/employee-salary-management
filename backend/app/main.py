@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import auth
 from app.core.config import get_settings
+
+API_PREFIX = "/api/v1"
 
 app = FastAPI(title="Salary Management API", version="0.1.0")
 
@@ -12,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth.router, prefix=API_PREFIX)
 
 
 @app.get("/health")

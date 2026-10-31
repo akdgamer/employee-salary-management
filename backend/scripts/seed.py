@@ -17,8 +17,10 @@ from typing import Any
 from sqlalchemy import Connection, text
 from sqlalchemy.dialects.postgresql import insert
 
+from app.core.config import get_settings
 from app.core.db import engine
 from app.models import Country, Currency
+from scripts.create_admin import create_admin
 
 SEED_DIR = Path(__file__).resolve().parent / "seed_data"
 
@@ -192,9 +194,11 @@ def seed(conn: Connection, n: int = 10_000, random_seed: int = 42) -> None:
 
 
 def main() -> None:
+    settings = get_settings()
     started = time.perf_counter()
     with engine.begin() as conn:
         seed(conn)
+        create_admin(conn, settings.admin_username, settings.admin_password)
     elapsed = time.perf_counter() - started
     print(f"Seeded 10,000 employees with salary history in {elapsed:.2f}s")
 
