@@ -29,6 +29,7 @@ cd backend
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env                 # then set JWT_SECRET and ADMIN_PASSWORD
+alembic upgrade head                 # create the schema
 uvicorn app.main:app --reload        # http://localhost:8000/health
 ```
 
@@ -37,7 +38,7 @@ Checks (from `backend/`):
 ```bash
 pytest                               # uses the test database on port 5434
 ruff check . && ruff format --check .
-mypy app tests
+mypy app tests alembic
 ```
 
 ## Documentation

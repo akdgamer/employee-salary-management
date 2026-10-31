@@ -11,9 +11,10 @@ os.environ.setdefault("JWT_SECRET", "test-secret-at-least-32-characters-long")
 os.environ.setdefault("ADMIN_PASSWORD", "test-password")
 
 from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
+from app import models  # noqa: E402, F401  (registers models on Base.metadata)
 from app.core.db import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 
@@ -22,6 +23,8 @@ _engine = create_engine(os.environ["DATABASE_URL"])
 
 @pytest.fixture(scope="session", autouse=True)
 def _schema() -> Iterator[None]:
+    with _engine.begin() as connection:
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
     Base.metadata.drop_all(_engine)
     Base.metadata.create_all(_engine)
     yield
