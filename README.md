@@ -21,5 +21,13 @@ Web-based salary management for an HR manager overseeing ~10,000 employees acros
 ## Documentation
 
 - [Requirements](docs/requirements.md): goal, scope, assumptions and what is deliberately left out
+- [Design](docs/design.md): architecture, data model and key flows
+- Decisions and trade-offs:
+  - [0001 Static exchange rates](docs/decisions/0001-static-fx-rates.md)
+  - [0002 `NUMERIC` for money](docs/decisions/0002-numeric-for-money.md)
+  - [0003 Convert to USD in SQL](docs/decisions/0003-usd-conversion-in-sql.md)
+  - [0004 Deactivate instead of delete](docs/decisions/0004-soft-delete-employees.md)
+  - [0005 Salary history in the application](docs/decisions/0005-salary-history-in-application.md)
+  - [0006 `COPY` for seeding](docs/decisions/0006-copy-for-seeding.md)
 
-Design notes, architecture diagrams, trade-offs and performance notes will be linked here as they are added.
+Performance notes will be linked here once measured.

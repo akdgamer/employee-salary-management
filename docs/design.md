@@ -1,0 +1,120 @@
+# Design
+
+How the system is put together, how data is modelled, and how the main flows work. The reasoning behind individual choices is recorded in [`decisions/`](decisions/).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    HR[HR manager<br/>browser]
+    subgraph Frontend [React SPA · Vercel]
+        UI[Login · Employees · Insights]
+    end
+    subgraph Backend [FastAPI · Render]
+        API[REST API /api/v1]
+    end
+    DB[(PostgreSQL 16)]
+
+    HR --> UI
+    UI -- "HTTPS + JWT" --> API
+    API -- "SQLAlchemy" --> DB
+```
+
+- **Frontend:** a static single-page app. TanStack Query caches server data; MUI DataGrid renders the employee table with server-side pagination.
+- **Backend:** a stateless JSON API. Every route except login requires a valid JWT.
+- **Database:** the single source of truth for employees, salaries, history and exchange rates.
+
+## Backend layers
+
+```
+backend/app/
+├── api/        HTTP only: routing, status codes, query validation
+├── schemas/    Pydantic request/response models (the API contract)
+├── services/   business rules and SQL composition
+├── models/     SQLAlchemy tables
+└── core/       configuration, database session, security (JWT, password hashing)
+```
+
+Requests flow `api → services → models`. Routers stay thin so business rules (salary history, currency lock, active-only insights) live in services, where they are unit-tested without HTTP.
+
+## Data model
+
+```mermaid
+erDiagram
+    countries ||--o{ employees : "located in"
+    currencies ||--o{ employees : "paid in"
+    employees ||--o{ salary_history : "has"
+    currencies ||--o{ salary_history : "in"
+
+    countries {
+        char2 code PK
+        string name
+    }
+    currencies {
+        char3 code PK
+        string name
+        numeric rate_to_usd
+        date rates_as_of
+    }
+    employees {
+        int id PK
+        string employee_code UK
+        string full_name
+        citext email UK
+        string job_title
+        char2 country_code FK
+        numeric salary_amount
+        char3 salary_currency FK
+        bool is_active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    salary_history {
+        int id PK
+        int employee_id FK
+        numeric old_amount "null on creation"
+        numeric new_amount
+        char3 currency FK
+        timestamptz changed_at
+    }
+    users {
+        int id PK
+        string username UK
+        string password_hash
+    }
+```
+
+| Table | Notes |
+|---|---|
+| `employees` | `salary_amount` is `NUMERIC(14,2)` in the employee's local currency and must be positive. `salary_currency` is independent of country and fixed after creation. `is_active` replaces deletion. |
+| `salary_history` | One row per salary change; its own primary key, so an employee can have many rows. The first row (`old_amount` null) records the starting salary. |
+| `currencies` | Static snapshot: `rate_to_usd` is `NUMERIC(20,8)`; `rates_as_of` is shown in the UI. |
+| `users` | The HR manager's login. |
+
+**Indexes**
+
+| Index | Serves |
+|---|---|
+| `employees (is_active, country_code, job_title)` | Insights and the country filter, which always filter on active employees first |
+| `employees (employee_code)`, `employees (email)` (unique) | Uniqueness and lookup |
+| `salary_history (employee_id, changed_at)` | One employee's history, newest first |
+
+## Key flows
+
+**List employees.** The API receives search, country, active/inactive, sort and page parameters. The service builds one SQL query that joins `currencies` to compute the USD amount, applies filters and sorting in the database, then paginates. Sorting by salary uses the USD amount so different currencies rank correctly.
+
+**Create an employee.** In one transaction: insert the employee, then insert a `salary_history` row with `old_amount = NULL` and `new_amount` = starting salary.
+
+**Update an employee.** In one transaction:
+1. Load the employee.
+2. Reject the request if it changes `salary_currency`.
+3. If `salary_amount` changes, insert a `salary_history` row (old → new) and update the employee.
+
+**Deactivate an employee.** Set `is_active = false`. The row and its history remain.
+
+**Insights.** `GROUP BY` queries over active employees, converting each salary to USD in SQL (`salary_amount × rate_to_usd`). Percentiles use `percentile_cont`.
+
+## Testing approach
+
+- **Backend:** pytest against a dedicated Postgres test database, so SQL features such as `percentile_cont` and `CITEXT` are tested for real. Each test runs in a rolled-back transaction to stay fast and isolated.
+- **Frontend:** vitest + Testing Library, with MSW mocking the API at the network layer.
