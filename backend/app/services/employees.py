@@ -16,6 +16,7 @@ from app.schemas.employee import (
     SortField,
     SortOrder,
 )
+from app.services.conversion import CURRENCY_JOIN, SALARY_USD
 
 EmployeeRow = tuple[Employee, Decimal]
 """An employee with their salary converted to USD."""
@@ -47,7 +48,7 @@ _CONSTRAINT_ERRORS: dict[str, Exception] = {
 }
 
 # Salary in USD (decision 0003): computed in SQL so sorting and paging use the same value.
-_SALARY_USD = func.round(Employee.salary_amount * Currency.rate_to_usd, 2)
+_SALARY_USD = func.round(SALARY_USD, 2)
 
 _SORT_COLUMNS: dict[SortField, Any] = {
     "name": Employee.full_name,
@@ -57,7 +58,7 @@ _SORT_COLUMNS: dict[SortField, Any] = {
 
 
 def _with_usd() -> Select[Employee, Decimal]:
-    return select(Employee, _SALARY_USD).join(Currency, Currency.code == Employee.salary_currency)
+    return select(Employee, _SALARY_USD).join(Currency, CURRENCY_JOIN)
 
 
 def _escape_like(term: str) -> str:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, employees, lookups
+from app.api import auth, employees, insights, lookups
 from app.core.config import get_settings
 
 API_PREFIX = "/api/v1"
@@ -19,6 +19,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(employees.router, prefix=API_PREFIX)
 app.include_router(lookups.router, prefix=API_PREFIX)
+app.include_router(insights.router, prefix=API_PREFIX)
 
 
 @app.get("/health")

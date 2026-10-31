@@ -112,7 +112,17 @@ erDiagram
 
 **Deactivate or reactivate an employee.** `PATCH /employees/{id}` with `is_active`. The row and its history remain.
 
-**Insights.** `GROUP BY` queries over active employees, converting each salary to USD in SQL (`salary_amount × rate_to_usd`). Percentiles use `percentile_cont`.
+**Insights.** Each endpoint is one `GROUP BY` query over active employees, converting salaries to USD in SQL (`salary_amount × rate_to_usd`) and rounding only the final aggregate:
+
+| Endpoint | Answers |
+|---|---|
+| `GET /insights/by-country` | Headcount, min, max and average pay per country |
+| `GET /insights/by-title?country=` | Average pay per job title in a country, highest first (the first rows are the top-paying titles) |
+| `GET /insights/title-comparison?title=` | How one job title is paid across countries, highest first |
+| `GET /insights/distribution?country=` | p25 / median / p75 / p90 via `percentile_cont`; null percentiles when a country has no active employees |
+| `GET /insights/job-titles` | Titles in use, for the comparison picker |
+
+**Known limitation:** job titles are free text, so differently written titles ("software engineer" vs "Software Engineer") form separate groups. A managed list of job titles would fix this and is out of scope for the first release.
 
 ## Testing approach
 
