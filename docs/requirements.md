@@ -14,18 +14,18 @@ Give ACME's HR manager a web application to manage salary data for ~10,000 emplo
 | Feature | Details | Why |
 |---|---|---|
 | Sign-in | Single HR manager account; every page and API call requires authentication | Salary data is sensitive |
-| Employee directory | Paginated table; search by name, email or employee code; filter by country | Finding one person among 10,000 must be instant |
+| Employee directory | Paginated table; search by name, email or employee code; filter by country. Inactive employees are hidden by default and shown via a filter | Finding one person among 10,000 must be instant |
 | Sorting | Sort by name, country or salary. Salary sorts by the USD-converted amount so different currencies rank correctly | Finding the highest and lowest paid is a core HR question |
-| Manage employees | Create, edit and delete employees with validation (required fields, positive salary, unique email and employee code) | Replaces manual spreadsheet edits |
+| Manage employees | Create, edit and deactivate employees with validation (required fields, positive salary, unique email and employee code). Employees are never hard-deleted | Replaces manual spreadsheet edits; past employees' pay data is kept |
 | Multi-currency salaries | Salary stored in the employee's local currency; table shows the native amount (e.g. ₹20,00,000) with its USD equivalent | Employees are contracted in local currency; USD gives a common basis for comparison |
-| Salary history | Every salary change records old amount, new amount, currency, timestamp and who made it; viewable per employee | Salary is sensitive, so every change must be traceable |
-| Pay insights (USD) | Min / max / average per country; average per job title within a country; one job title compared across countries; salary percentiles (p25, p50, p75, p90) per country; top-paying titles per country | Answers "how does the org pay people?" directly |
+| Salary history | Every salary change records old amount, new amount, currency, timestamp and who made it; creating an employee records the starting salary; viewable per employee | Salary is sensitive, so every change must be traceable |
+| Pay insights (USD) | Min / max / average per country; average per job title within a country; one job title compared across countries; salary percentiles (p25, p50, p75, p90) per country; top-paying titles per country. Active employees only | Answers "how does the org pay people?" directly |
 | Seed data | Deterministic script generating 10,000 realistic employees | Reproducible demo and test data |
 
 ## Assumptions
 
 - Exchange rates are a **static snapshot** stored in the database with an "as of" date shown in the UI. Converted figures are indicative, not live.
-- Each employee is paid in one currency.
+- An employee's salary currency is fixed after creation; edits that change it are rejected.
 - Money is stored with exact decimal precision, never floating point.
 
 ## Deliberately out of scope
