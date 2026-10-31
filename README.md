@@ -18,6 +18,28 @@ Web-based salary management for an HR manager overseeing ~10,000 employees acros
 | Routing | **React Router** | Client-side routes for login, employees and insights, with protected routes | — |
 | Charts | **Recharts** | Declarative React charts for salary distributions | Less flexible than lower-level charting libraries |
 
+## Local development
+
+Requires Docker, Python 3.11+.
+
+```bash
+docker compose up -d                 # dev database (5432) and test database (5434)
+
+cd backend
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+cp .env.example .env                 # then set JWT_SECRET and ADMIN_PASSWORD
+uvicorn app.main:app --reload        # http://localhost:8000/health
+```
+
+Checks (from `backend/`):
+
+```bash
+pytest                               # uses the test database on port 5434
+ruff check . && ruff format --check .
+mypy app tests
+```
+
 ## Documentation
 
 - [Requirements](docs/requirements.md): goal, scope, assumptions and what is deliberately left out
