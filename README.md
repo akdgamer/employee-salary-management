@@ -20,7 +20,7 @@ Web-based salary management for an HR manager overseeing ~10,000 employees acros
 
 ## Local development
 
-Requires Docker, Python 3.11+.
+Requires Docker, Python 3.11+ and Node 22+.
 
 ```bash
 docker compose up -d                 # dev database (5432) and test database (5434)
@@ -34,14 +34,26 @@ python -m scripts.seed               # 10,000 employees + admin login (re-runnab
 uvicorn app.main:app --reload        # API docs at http://localhost:8000/docs
 ```
 
-Sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD` from `.env`. To change the password without touching employee data, update `.env` and run `python -m scripts.create_admin`.
-
-Checks (from `backend/`):
+Frontend (second terminal):
 
 ```bash
+cd frontend
+npm install
+npm run dev                          # http://localhost:5173 (API URL from VITE_API_URL, see .env.example)
+```
+
+Sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD` from `.env`. To change the password without touching employee data, update `.env` and run `python -m scripts.create_admin`.
+
+Checks:
+
+```bash
+# backend/
 pytest                               # uses the test database on port 5434
 ruff check . && ruff format --check .
 mypy app tests alembic scripts
+
+# frontend/
+npm test && npm run lint && npm run typecheck
 ```
 
 ## Documentation
