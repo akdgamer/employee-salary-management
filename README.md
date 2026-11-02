@@ -60,6 +60,7 @@ npm test && npm run lint && npm run typecheck
 
 - [Requirements](docs/requirements.md): goal, scope, assumptions and what is deliberately left out
 - [Design](docs/design.md): architecture, data model and key flows
+- [Deployment](docs/deployment.md): Neon + Render + Vercel, and what runs on each deploy
 - Decisions and trade-offs:
   - [0001 Static exchange rates](docs/decisions/0001-static-fx-rates.md)
   - [0002 `NUMERIC` for money](docs/decisions/0002-numeric-for-money.md)

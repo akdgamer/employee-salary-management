@@ -13,7 +13,7 @@ flowchart LR
     subgraph Backend [FastAPI · Render]
         API[REST API /api/v1]
     end
-    DB[(PostgreSQL 16)]
+    DB[(PostgreSQL 16 · Neon)]
 
     HR --> UI
     UI -- "HTTPS + JWT" --> API
