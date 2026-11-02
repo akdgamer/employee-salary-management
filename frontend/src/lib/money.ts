@@ -24,3 +24,15 @@ export function formatDate(iso: string): string {
     year: 'numeric',
   })
 }
+
+const compactUsd = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  notation: 'compact',
+  maximumFractionDigits: 0,
+})
+
+/** Axis-friendly USD, e.g. $120K. */
+export function formatCompactUsd(value: number): string {
+  return compactUsd.format(value)
+}
