@@ -18,4 +18,10 @@ export const server = setupServer(
       ? HttpResponse.json({ id: 1, username: VALID.username })
       : HttpResponse.json({ detail: 'Not authenticated' }, { status: 401 }),
   ),
+  // Defaults so any page can render; tests override these with server.use().
+  http.get(`${API}/employees`, () =>
+    HttpResponse.json({ items: [], total: 0, page: 1, page_size: 25 }),
+  ),
+  http.get(`${API}/countries`, () => HttpResponse.json([])),
+  http.get(`${API}/currencies`, () => HttpResponse.json([])),
 )
