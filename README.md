@@ -1,8 +1,15 @@
 # Salary Management
 
+[![backend](https://github.com/akdgamer/employee-salary-management/actions/workflows/backend.yml/badge.svg)](https://github.com/akdgamer/employee-salary-management/actions/workflows/backend.yml)
+[![frontend](https://github.com/akdgamer/employee-salary-management/actions/workflows/frontend.yml/badge.svg)](https://github.com/akdgamer/employee-salary-management/actions/workflows/frontend.yml)
+
 Web-based salary management for an HR manager overseeing ~10,000 employees across multiple countries. It replaces spreadsheet-based salary tracking and answers questions about how the organisation pays people.
 
-> **Status:** work in progress. Documentation and implementation are added incrementally; see the commit history for how the solution evolved.
+**Live demo:** https://employee-salary-management-three.vercel.app. Sign-in credentials are shared with reviewers separately. The API runs on a free tier that sleeps when idle, so the first request can take about a minute.
+
+**What it does:** search, filter and sort 10,000 employees; add, edit and deactivate them with full salary history; see each salary in local currency and USD; and explore pay by country, job title and percentile.
+
+The commit history shows how the solution evolved, from requirements and design through backend, frontend, CI and deployment.
 
 ## Stack and rationale
 
@@ -69,4 +76,4 @@ npm test && npm run lint && npm run typecheck
   - [0005 Salary history in the application](docs/decisions/0005-salary-history-in-application.md)
   - [0006 `COPY` for seeding](docs/decisions/0006-copy-for-seeding.md)
 
-Performance notes will be linked here once measured.
+- [Performance](docs/performance.md): measured seed and query timings, index usage, and what changes at larger scale (reproduce with `python -m scripts.benchmark`)

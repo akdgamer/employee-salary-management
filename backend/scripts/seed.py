@@ -167,17 +167,16 @@ def generate_employees(rng: random.Random, n: int) -> Iterator[tuple[object, ...
         )
 
 
-def seed_employees(conn: Connection, n: int, seed: int) -> None:
-    """Replace all employees and give each one a starting-salary history row."""
-    conn.execute(text("TRUNCATE salary_history, employees RESTART IDENTITY"))
-
-    # COPY bypasses the ORM for speed; it runs on the same transaction as `conn`.
+def copy_employees(conn: Connection, n: int, seed: int) -> None:
+    """Bulk-load generated employees; COPY runs on the same transaction as `conn`."""
     cursor = conn.connection.driver_connection.cursor()  # type: ignore[union-attr]
     with cursor.copy(f"COPY employees ({', '.join(EMPLOYEE_COLUMNS)}) FROM STDIN") as copy:
         for row in generate_employees(random.Random(seed), n):
             copy.write_row(row)
 
-    # COPY skips the service layer, so the starting-salary history is written here (ADR 0005).
+
+def insert_starting_history(conn: Connection) -> None:
+    """COPY skips the service layer, so the starting-salary history is written here (ADR 0005)."""
     conn.execute(
         text(
             "INSERT INTO salary_history"
@@ -185,6 +184,13 @@ def seed_employees(conn: Connection, n: int, seed: int) -> None:
             " SELECT id, NULL, salary_amount, salary_currency, created_at FROM employees"
         )
     )
+
+
+def seed_employees(conn: Connection, n: int, seed: int) -> None:
+    """Replace all employees and give each one a starting-salary history row."""
+    conn.execute(text("TRUNCATE salary_history, employees RESTART IDENTITY"))
+    copy_employees(conn, n, seed)
+    insert_starting_history(conn)
 
 
 def seed(conn: Connection, n: int = 10_000, random_seed: int = 42) -> None:
